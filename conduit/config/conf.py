@@ -2,6 +2,7 @@ from utilmeta import conf
 from config.env import env
 from utilmeta.util.common import Format
 from utilmeta.util.parser.base import Options
+from datetime import timedelta
 
 config = conf.Config(
     __name__,
@@ -58,6 +59,8 @@ config = conf.Config(
     log=conf.Log(
         data_store_level=conf.Log.WARN,
         result_store_level=conf.Log.WARN,
+        query_store_time_limit=timedelta(microseconds=400),
+        maintain=timedelta(days=7)
     ),
     databases={
         'default': conf.Database(
@@ -94,6 +97,7 @@ config = conf.Config(
         socket=conf.Deploy.AUTO_FILE,
         # worker_class=conf.UWSGI.GEVENT,
         # worker_connections=1000,
+        https=True,
         wsgi_server=conf.UWSGI('uwsgi.ini'),
         web_server=conf.Nginx('conf.nginx', link='/etc/nginx/sites-enabled/realworld-example-app.conf',
                               main='/etc/nginx/nginx.conf'),
