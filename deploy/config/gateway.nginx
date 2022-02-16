@@ -1,0 +1,18 @@
+server{
+    listen 80;
+    server_name realworld.utilmeta.com;
+    return 301 https://realworld.utilmeta.com$request_uri;
+}
+
+server{
+    listen 443 ssl default_server http2;
+    server_name realworld.utilmeta.com;
+    charset utf-8;
+
+    ssl_certificate /etc/letsencrypt/live/realworld.utilmeta.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/realworld.utilmeta.com/privkey.pem; # managed by Certbot
+
+    location /{
+        proxy_pass http://10.124.0.2;
+    }
+}

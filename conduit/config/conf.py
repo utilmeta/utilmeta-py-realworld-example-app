@@ -88,7 +88,7 @@ config = conf.Config(
         use_tz=False
     ),
     deploy=conf.Deploy(
-        socket=conf.Deploy.AUTO_PORT,
+        socket=conf.Deploy.AUTO_FILE,
         # worker_class=conf.UWSGI.GEVENT,
         # worker_connections=1000,
         wsgi_server=conf.UWSGI('uwsgi.ini'),
