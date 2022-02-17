@@ -38,16 +38,16 @@ class ArticleMain(Module):
             self.tags.append(tag)
 
     @api.get(request=Request(login=True), option=Option(path_param_field=None))
-    def feed(self) -> List[schema]:
+    def feed(self, limit: int = Field(Option.PARAM_LIMIT), offset: int = Field(Option.PARAM_OFFSET)) -> List[schema]:
         self.queryset = self.queryset.filter(author__followers=self.user)
-        self.query_count = self.count
+        self.apply_alter(limit=limit, offset=offset)
         return self.serialize()
 
     @api.before(feed, method.GET)
     def filter_public(self):
         if env.PUBLIC_ONLY:
             # only display public content or self-created content
-            self.q = self.q.filter(exp.Q(public=True) | exp.Q(author_id=self.user_id))
+            self.queryset = self.queryset.filter(exp.Q(public=True) | exp.Q(author_id=self.user_id))
 
     @api.post(request=Request(login=True))
     def favorite(self, article: model):
