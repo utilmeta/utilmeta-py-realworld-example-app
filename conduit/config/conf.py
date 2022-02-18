@@ -68,7 +68,8 @@ config = conf.Config(
             engine=conf.Database.POSTGRESQL,
             name='realworld',
             user=env.DATABASE_USER,
-            password=env.DATABASE_PASSWORD
+            password=env.DATABASE_PASSWORD,
+            conn_clear_threshold=30
         ) if env.PRODUCTION else conf.Database(
             engine=conf.Database.SQLITE,
             name='realworld_demo',
@@ -77,7 +78,8 @@ config = conf.Config(
             engine=conf.Database.POSTGRESQL,
             name='realworld_ops',
             user=env.DATABASE_USER,
-            password=env.DATABASE_PASSWORD
+            password=env.DATABASE_PASSWORD,
+            conn_clear_threshold=30
         ) if env.PRODUCTION else conf.Database(
             engine=conf.Database.SQLITE,
             name='realworld_demo_ops',

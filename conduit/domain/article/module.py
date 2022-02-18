@@ -38,7 +38,7 @@ class ArticleMain(Module):
             tag, created = Tag.objects.update_or_create(slug=slug, defaults=dict(name=name))
             self.tags.append(tag)
 
-    @api.get(option=Option(path_param_field=None))
+    @api.get(option=Option(path_param_field=None, split_many_relation_query=True))
     def feed(self, limit: int = Field(Option.PARAM_LIMIT, default=None),
              offset: int = Field(Option.PARAM_OFFSET, default=None)) -> List[schema]:
         if not self.user_id:
