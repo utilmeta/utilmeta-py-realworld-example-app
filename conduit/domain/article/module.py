@@ -37,8 +37,11 @@ class ArticleMain(Module):
             tag, created = Tag.objects.update_or_create(slug=slug, defaults=dict(name=name))
             self.tags.append(tag)
 
-    @api.get(request=Request(login=True), option=Option(path_param_field=None))
-    def feed(self, limit: int = Field(Option.PARAM_LIMIT), offset: int = Field(Option.PARAM_OFFSET)) -> List[schema]:
+    @api.get(option=Option(path_param_field=None))
+    def feed(self, limit: int = Field(Option.PARAM_LIMIT, default=None),
+             offset: int = Field(Option.PARAM_OFFSET, default=None)) -> List[schema]:
+        if not self.user_id:
+            return []
         self.queryset = self.queryset.filter(author__followers=self.user)
         self.apply_alter(limit=limit, offset=offset)
         return self.serialize()
