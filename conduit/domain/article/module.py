@@ -15,7 +15,8 @@ class ArticleMain(Module):
             'author': Filter(field='author.username'),
             'favorited': Filter(field='favorited_bys.username'),
         },
-        auto_user_field=model.author
+        auto_user_field=model.author,
+        split_many_relation_query=True
     )
     method = Method(
         get=Page(offset=True, all=True),
