@@ -85,6 +85,13 @@ config = conf.Config(
     },
     caches={
         'default': conf.Cache(
+            backend=conf.Cache.REDIS,
+            password=env.REDIS_PASSWORD,
+            redis_config=conf.Cache.Redis(
+                '/etc/redis/redis.conf',
+                daemonize=True,
+            )
+        ) if env.PRODUCTION else conf.Cache(
             backend=conf.Cache.FILE
         )
     },
