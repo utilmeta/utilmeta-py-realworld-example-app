@@ -59,9 +59,9 @@ config = conf.Config(
     log=conf.Log(
         data_store_level=conf.Log.WARN,
         result_store_level=conf.Log.WARN,
-        query_store_time_limit=timedelta(microseconds=400),
+        query_store_time_limit=timedelta(milliseconds=600),
         maintain=timedelta(days=7),
-        parse_user_agent=True
+        parse_user_agent=True,
     ),
     databases={
         'default': conf.Database(

@@ -36,3 +36,7 @@ class RootAPI(API):
     @api.handle('*', exc.BadRequest)
     def handle_bad_request(self, e: Error) -> Response(error_message_key='error', status=422):
         return self.response(message=str(e))
+
+    @api.handle('*', Exception)
+    def handle_all_request(self, e: Error) -> Response(error_message_key='error'):
+        return self.response(message=str(e))
