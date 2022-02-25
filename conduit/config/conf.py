@@ -52,6 +52,7 @@ config = conf.Config(
     monitor=conf.Monitor(
         server_monitor_interval=60,
         worker_monitor_interval=20,
+        cpu_percent_interval=10
     ),
     alert=conf.Alert(
         default_interval=60,

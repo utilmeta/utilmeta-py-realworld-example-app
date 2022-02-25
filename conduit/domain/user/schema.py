@@ -18,6 +18,7 @@ class UserRegister(UserLogin):
 
 class UserSchema(UserBase):
     email: str
+    password: str = Field(writeonly=True)
     token: str = Field(readonly=True)
 
 
