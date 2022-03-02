@@ -32,6 +32,8 @@ config = conf.Config(
     task=conf.Task(
         main_cycle_interval=30,
         worker_cycle_interval=15,
+        process_start_method=conf.Task.FORKSERVER if env.PRODUCTION else None,
+        manager_cls=conf.Task.ASSIGN_MANAGER,
         console_log_execution=not env.PRODUCTION,
         max_instance_memory=0.3,
         max_worker_memory=200 * 1024 ** 2,
@@ -39,6 +41,7 @@ config = conf.Config(
         max_workers=conf.Task.MAX_WORKERS,
         max_worker_tasks=10,
         min_worker_tasks=3,
+        root_user=True,
         concurrent_cls=conf.Task.THREAD_POOL      # or conf.Task.GEVENT_POOL for gevent backend
     ),
     ops=conf.Operations(
@@ -46,8 +49,8 @@ config = conf.Config(
         cache='default',
         route='ops',
         token=env.OPS_TOKEN,
-        supervisor_secure=env.PRODUCTION,
-        supervisor_authorized=env.PRODUCTION
+        supervisor_secure=False,        # for local test
+        supervisor_authorized=False     # for local test
     ),
     monitor=conf.Monitor(
         server_monitor_interval=60,
