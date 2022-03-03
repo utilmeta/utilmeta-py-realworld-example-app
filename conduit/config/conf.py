@@ -38,7 +38,8 @@ config = conf.Config(
         max_instance_memory=0.3,
         max_worker_memory=200 * 1024 ** 2,
         min_interval=3,
-        max_workers=conf.Task.MAX_WORKERS,
+        init_workers=2,
+        max_workers=3,
         max_worker_tasks=10,
         min_worker_tasks=3,
         root_user=True,
@@ -116,6 +117,7 @@ config = conf.Config(
         max_instance_memory=0.3,
         https=True,
         threads=8,
+        workers=2,
         wsgi_server=conf.UWSGI(
             'uwsgi.ini',
             disable_logging=True,
