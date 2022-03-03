@@ -13,6 +13,7 @@ conduit/domain/test
 
 .idea
 .vscode
+.whl
 *.suo
 *.ntvs*
 *.njsproj
