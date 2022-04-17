@@ -65,11 +65,18 @@ class ArticleMain(Module):
     def alter_result(self, result) -> Response(
         result_data_key='articles',
         total_count_key='articlesCount',
+        description='multiple results when param [slug] is not provided',
         name='multi'
-    ): pass
+    ):
+        pass
 
     @api.after(method.GET, method.PUT, method.POST, favorite, unfavorite)
-    def add_result(self, article: model) -> Response(schema, result_data_key='article', name='sole'):
+    def add_result(self, article: model) -> Response(
+        schema,
+        result_data_key='article',
+        description='single result when param [slug] is provided',
+        name='sole'
+    ):
         if self.tags:
             article.tags.set(self.tags)
         return self.object
@@ -95,8 +102,18 @@ class CommentMain(Module, register=True):
             self.q = self.q.filter(exp.Q(public=True) | exp.Q(author_id=self.user_id))
 
     @api.after(method.GET)
-    def alter_result(self) -> Response(List[schema], result_data_key='comments', name='multi'): pass
+    def alter_result(self) -> Response(
+        List[schema],
+        result_data_key='comments',
+        description='multiple results when param [id] is not provided',
+        name='multi'
+    ): pass
 
-    @api.after('*', excludes=method.DELETE)     # mark as one=True
-    def add_result(self, target: model) -> Response(schema, result_data_key='comment', name='sole'):
+    @api.after('*', excludes=method.DELETE)
+    def add_result(self, target: model) -> Response(
+        schema,
+        result_data_key='comment',
+        description='single result when param [id] is provided',
+        name='sole'
+    ):
         return self.object if target else None

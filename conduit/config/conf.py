@@ -1,6 +1,6 @@
 from utilmeta import conf
 from config.env import env
-from utilmeta.util.common import Format
+from utilmeta.util.common import Format, DEFAULT_SECRET_NAMES
 from utilmeta.util.parser.base import Options
 from datetime import timedelta
 
@@ -49,6 +49,7 @@ config = conf.Config(
         db='ops',
         cache='default',
         route='ops',
+        secret_names=[*DEFAULT_SECRET_NAMES, 'token'],
         token=env.OPS_TOKEN,
         supervisor_secure=False,        # for local test
         supervisor_authorized=False     # for local test

@@ -39,4 +39,4 @@ class RootAPI(API):
 
     @api.handle('*', Exception)
     def handle_all_request(self, e: Error) -> Response(error_message_key='error'):
-        return self.response(message=e)
+        return self.response(message=e, status=e.status)
