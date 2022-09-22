@@ -16,7 +16,7 @@ class UsersAPI(API):
         Auth.register(data=data, request=self.request)
         return self.user_data
 
-    @api.post(request=Request(max_errors=10, max_rps=1))
+    @api.post(request=Request(max_errors=10))
     def login(self, data: UserLogin = Request.Body) -> UserSchema:
         Auth.login(token=data.email, password=data.password, request=self.request)
         return self.user_data

@@ -1,10 +1,7 @@
-from utilmeta import conf
-conf.BACKGROUND = True
-
 from config.conf import config
 from utilmeta.service import UtilMeta
 
-service = UtilMeta(config=config)
+service = UtilMeta(config=config, background=True)
 service.resolve()
 # YOU MUST IMPORT UTILS AFTER SERVICE RESOLVE
 

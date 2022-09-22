@@ -17,17 +17,16 @@ class CommentSchema(BaseContentSchema):
 
 
 class ArticleSchema(BaseContentSchema):
-    slug: str = Field(readonly=True, allow_creation=False, require=False)
-    title: str = ''
+    __options__ = Schema.Options(unprovided_attribute_value=None)   # easy to deal with unprovided value in hooks
+
+    slug: str = Field(readonly=True, allow_creation=False, required=False, bypass_write=True)
+    title: str
     description: str
-    tag_list: List[str] = Field('tags.name', readonly=False, allow_creation=True, default=list)
+    tag_list: List[str] = Field('tags.name', readonly=True, allow_creation=True, default=list)
     favorites_count: int = exp.Count('favorited_bys')
 
     favorited: bool = Field(request_expression=lambda request: exp.Exists(
         User.objects.filter(pk=request.user_id, favorites=exp.OuterRef('pk'))
     ))
 
-    # favorited: bool = Field(request_expression=lambda request: exp.Count(
-    #     'id', filter=exp.Q(favorited_bys=request.user)))
-
-    comments: List[CommentSchema] = Field(retain=False, module='CommentMain', mount=True)
+    comments: List[CommentSchema] = Field(discard=True, module='CommentMain', mount=True)

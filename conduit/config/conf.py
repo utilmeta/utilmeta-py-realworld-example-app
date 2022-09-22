@@ -18,7 +18,9 @@ config = conf.Config(
     production=env.PRODUCTION,
     middlewares=conf.DEFAULT_MIDDLEWARES,
     preference=conf.Preference(
-        base_parser_options=Options(alias_from_case_styles='camelCase'),
+        base_parser_options=Options(
+            alias_for_generator=Options.CAMEL_CASE_GENERATOR,
+        ),
         param_offset_name='offset',
         param_limit_name='limit',
     ),
@@ -51,6 +53,7 @@ config = conf.Config(
         route='ops',
         secret_names=[*DEFAULT_SECRET_NAMES, 'token'],
         token=env.OPS_TOKEN,
+        trust_localhost=not env.PRODUCTION,
         supervisor_secure=False,        # for local test
         supervisor_authorized=False     # for local test
     ),
@@ -66,7 +69,7 @@ config = conf.Config(
         data_store_level=conf.Log.WARN,
         result_store_level=conf.Log.WARN,
         query_store_time_limit=timedelta(milliseconds=600),
-        maintain=timedelta(days=7),
+        max_retention_time=timedelta(days=7),
         parse_user_agent=True,
     ),
     databases={

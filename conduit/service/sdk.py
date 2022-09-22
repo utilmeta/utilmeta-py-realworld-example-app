@@ -10,14 +10,14 @@ class ArticlesCommentsSDK(SDK):
 				username: 'str'
 				bio: 'str'
 				image: 'str'
-				following: 'bool' = Rule(require=False)
-				id: 'int' = Rule(require=False)
+				following: 'bool' = Rule(required=False)
+				id: 'int' = Rule(required=False)
 			body: 'str'
 			createdAt: 'datetime'
 			updatedAt: 'datetime'
 			author: AuthorSchema
-			public: 'bool' = Rule(require=False)
-			id: 'int' = Rule(require=False)
+			public: 'bool' = Rule(required=False)
+			id: 'int' = Rule(required=False)
 		name = 'multi'
 		result: List[GetMultiResultSchema]
 		__params__ = Response(result_data_key='comments')
@@ -28,14 +28,14 @@ class ArticlesCommentsSDK(SDK):
 				username: 'str'
 				bio: 'str'
 				image: 'str'
-				following: 'bool' = Rule(require=False)
-				id: 'int' = Rule(require=False)
+				following: 'bool' = Rule(required=False)
+				id: 'int' = Rule(required=False)
 			body: 'str'
 			createdAt: 'datetime'
 			updatedAt: 'datetime'
 			author: AuthorSchema
-			public: 'bool' = Rule(require=False)
-			id: 'int' = Rule(require=False)
+			public: 'bool' = Rule(required=False)
+			id: 'int' = Rule(required=False)
 		name = 'sole'
 		result: GetSoleResultSchema
 		__params__ = Response(result_data_key='comment')
@@ -58,14 +58,14 @@ class ArticlesCommentsSDK(SDK):
 				username: 'str'
 				bio: 'str'
 				image: 'str'
-				following: 'bool' = Rule(require=False)
-				id: 'int' = Rule(require=False)
+				following: 'bool' = Rule(required=False)
+				id: 'int' = Rule(required=False)
 			body: 'str'
 			createdAt: 'datetime'
 			updatedAt: 'datetime'
 			author: AuthorSchema
-			public: 'bool' = Rule(require=False)
-			id: 'int' = Rule(require=False)
+			public: 'bool' = Rule(required=False)
+			id: 'int' = Rule(required=False)
 		name = 'sole'
 		result: PostSoleResultSchema
 		__params__ = Response(result_data_key='comment')
@@ -83,22 +83,22 @@ class ArticlesCommentsSDK(SDK):
 	@api.get('articles/{slug}/comments/{id}', idempotent=True)
 	def get(
 		self,
-		id: 'int' = Rule(require=False, ge=1, le=2147483647),
-		slug: 'str' = Rule(require=False, max_length=255)
+		id: 'int' = Rule(required=False, ge=1, le=2147483647),
+		slug: 'str' = Rule(required=False, max_length=255)
 	) -> Union[GetMultiResponse, GetSoleResponse, GetBadrequestResponse]: pass
 
 	@api.post('articles/{slug}/comments', idempotent=False)
 	def post(
 		self,
-		slug: 'str' = Rule(require=False, max_length=255),
+		slug: 'str' = Rule(required=False, max_length=255),
 		data: PostBodySchema = Request.Body
 	) -> Union[PostSoleResponse, PostBadrequestResponse]: pass
 
 	@api.delete('articles/{slug}/comments/{id}', idempotent=True)
 	def delete(
 		self,
-		id: 'int' = Rule(require=False, ge=1, le=2147483647),
-		slug: 'str' = Rule(require=False, max_length=255)
+		id: 'int' = Rule(required=False, ge=1, le=2147483647),
+		slug: 'str' = Rule(required=False, max_length=255)
 	) -> Union[BaseResponse, DeleteBadrequestResponse]: pass
 
 
@@ -109,20 +109,20 @@ class ArticlesFavoriteSDK(SDK):
 				username: 'str'
 				bio: 'str'
 				image: 'str'
-				following: 'bool' = Rule(require=False)
-				id: 'int' = Rule(require=False)
+				following: 'bool' = Rule(required=False)
+				id: 'int' = Rule(required=False)
 			body: 'str'
 			createdAt: 'datetime'
 			updatedAt: 'datetime'
 			author: AuthorSchema
 			description: 'str'
-			public: 'bool' = Rule(require=False)
-			slug: 'str' = Rule(require=False)
-			title: 'str' = Rule(require=False)
-			tagList: List['str'] = Rule(require=False)
-			favoritesCount: 'int' = Rule(require=False)
-			favorited: 'bool' = Rule(require=False)
-			id: 'int' = Rule(require=False)
+			public: 'bool' = Rule(required=False)
+			slug: 'str' = Rule(required=False)
+			title: 'str' = Rule(required=False)
+			tagList: List['str'] = Rule(required=False)
+			favoritesCount: 'int' = Rule(required=False)
+			favorited: 'bool' = Rule(required=False)
+			id: 'int' = Rule(required=False)
 		name = 'sole'
 		result: PostSoleResultSchema
 		__params__ = Response(result_data_key='article')
@@ -133,20 +133,20 @@ class ArticlesFavoriteSDK(SDK):
 				username: 'str'
 				bio: 'str'
 				image: 'str'
-				following: 'bool' = Rule(require=False)
-				id: 'int' = Rule(require=False)
+				following: 'bool' = Rule(required=False)
+				id: 'int' = Rule(required=False)
 			body: 'str'
 			createdAt: 'datetime'
 			updatedAt: 'datetime'
 			author: AuthorSchema
 			description: 'str'
-			public: 'bool' = Rule(require=False)
-			slug: 'str' = Rule(require=False)
-			title: 'str' = Rule(require=False)
-			tagList: List['str'] = Rule(require=False)
-			favoritesCount: 'int' = Rule(require=False)
-			favorited: 'bool' = Rule(require=False)
-			id: 'int' = Rule(require=False)
+			public: 'bool' = Rule(required=False)
+			slug: 'str' = Rule(required=False)
+			title: 'str' = Rule(required=False)
+			tagList: List['str'] = Rule(required=False)
+			favoritesCount: 'int' = Rule(required=False)
+			favorited: 'bool' = Rule(required=False)
+			id: 'int' = Rule(required=False)
 		name = 'sole'
 		result: DeleteSoleResultSchema
 		__params__ = Response(result_data_key='article')
@@ -154,13 +154,13 @@ class ArticlesFavoriteSDK(SDK):
 	@api.post('articles/{slug}/favorite', idempotent=False)
 	def post(
 		self,
-		slug: 'str' = Rule(require=False, max_length=255)
+		slug: 'str' = Rule(required=False, max_length=255)
 	) -> PostSoleResponse: pass
 
 	@api.delete('articles/{slug}/favorite', idempotent=True)
 	def delete(
 		self,
-		slug: 'str' = Rule(require=False, max_length=255)
+		slug: 'str' = Rule(required=False, max_length=255)
 	) -> DeleteSoleResponse: pass
 
 
@@ -174,19 +174,19 @@ class ArticlesSDK(SDK):
 				username: 'str'
 				bio: 'str'
 				image: 'str'
-				following: 'bool' = Rule(require=False)
-				id: 'int' = Rule(require=False)
+				following: 'bool' = Rule(required=False)
+				id: 'int' = Rule(required=False)
 			body: 'str'
 			createdAt: 'datetime'
 			updatedAt: 'datetime'
 			author: AuthorSchema
 			description: 'str'
-			public: 'bool' = Rule(require=False)
-			slug: 'str' = Rule(require=False)
-			title: 'str' = Rule(require=False)
-			tagList: List['str'] = Rule(require=False)
-			favoritesCount: 'int' = Rule(require=False)
-			favorited: 'bool' = Rule(require=False)
+			public: 'bool' = Rule(required=False)
+			slug: 'str' = Rule(required=False)
+			title: 'str' = Rule(required=False)
+			tagList: List['str'] = Rule(required=False)
+			favoritesCount: 'int' = Rule(required=False)
+			favorited: 'bool' = Rule(required=False)
 		name = 'multi'
 		result: List[GetMultiResultSchema]
 		__params__ = Response(result_data_key='articles', total_count_key='articlesCount')
@@ -197,20 +197,20 @@ class ArticlesSDK(SDK):
 				username: 'str'
 				bio: 'str'
 				image: 'str'
-				following: 'bool' = Rule(require=False)
-				id: 'int' = Rule(require=False)
+				following: 'bool' = Rule(required=False)
+				id: 'int' = Rule(required=False)
 			body: 'str'
 			createdAt: 'datetime'
 			updatedAt: 'datetime'
 			author: AuthorSchema
 			description: 'str'
-			public: 'bool' = Rule(require=False)
-			slug: 'str' = Rule(require=False)
-			title: 'str' = Rule(require=False)
-			tagList: List['str'] = Rule(require=False)
-			favoritesCount: 'int' = Rule(require=False)
-			favorited: 'bool' = Rule(require=False)
-			id: 'int' = Rule(require=False)
+			public: 'bool' = Rule(required=False)
+			slug: 'str' = Rule(required=False)
+			title: 'str' = Rule(required=False)
+			tagList: List['str'] = Rule(required=False)
+			favoritesCount: 'int' = Rule(required=False)
+			favorited: 'bool' = Rule(required=False)
+			id: 'int' = Rule(required=False)
 		name = 'sole'
 		result: GetSoleResultSchema
 		__params__ = Response(result_data_key='article')
@@ -235,20 +235,20 @@ class ArticlesSDK(SDK):
 				username: 'str'
 				bio: 'str'
 				image: 'str'
-				following: 'bool' = Rule(require=False)
-				id: 'int' = Rule(require=False)
+				following: 'bool' = Rule(required=False)
+				id: 'int' = Rule(required=False)
 			body: 'str'
 			createdAt: 'datetime'
 			updatedAt: 'datetime'
 			author: AuthorSchema
 			description: 'str'
-			public: 'bool' = Rule(require=False)
-			slug: 'str' = Rule(require=False)
-			title: 'str' = Rule(require=False)
-			tagList: List['str'] = Rule(require=False)
-			favoritesCount: 'int' = Rule(require=False)
-			favorited: 'bool' = Rule(require=False)
-			id: 'int' = Rule(require=False)
+			public: 'bool' = Rule(required=False)
+			slug: 'str' = Rule(required=False)
+			title: 'str' = Rule(required=False)
+			tagList: List['str'] = Rule(required=False)
+			favoritesCount: 'int' = Rule(required=False)
+			favorited: 'bool' = Rule(required=False)
+			id: 'int' = Rule(required=False)
 		name = 'sole'
 		result: PutSoleResultSchema
 		__params__ = Response(result_data_key='article')
@@ -274,20 +274,20 @@ class ArticlesSDK(SDK):
 				username: 'str'
 				bio: 'str'
 				image: 'str'
-				following: 'bool' = Rule(require=False)
-				id: 'int' = Rule(require=False)
+				following: 'bool' = Rule(required=False)
+				id: 'int' = Rule(required=False)
 			body: 'str'
 			createdAt: 'datetime'
 			updatedAt: 'datetime'
 			author: AuthorSchema
 			description: 'str'
-			public: 'bool' = Rule(require=False)
-			slug: 'str' = Rule(require=False)
-			title: 'str' = Rule(require=False)
-			tagList: List['str'] = Rule(require=False)
-			favoritesCount: 'int' = Rule(require=False)
-			favorited: 'bool' = Rule(require=False)
-			id: 'int' = Rule(require=False)
+			public: 'bool' = Rule(required=False)
+			slug: 'str' = Rule(required=False)
+			title: 'str' = Rule(required=False)
+			tagList: List['str'] = Rule(required=False)
+			favoritesCount: 'int' = Rule(required=False)
+			favorited: 'bool' = Rule(required=False)
+			id: 'int' = Rule(required=False)
 		name = 'sole'
 		result: PostSoleResultSchema
 		__params__ = Response(result_data_key='article')
@@ -308,35 +308,35 @@ class ArticlesSDK(SDK):
 				username: 'str'
 				bio: 'str'
 				image: 'str'
-				following: 'bool' = Rule(require=False)
-				id: 'int' = Rule(require=False)
+				following: 'bool' = Rule(required=False)
+				id: 'int' = Rule(required=False)
 
 			class CommentsSchema(Schema, isolate=True):
 				class AuthorSchema1(Schema):
 					username: 'str'
 					bio: 'str'
 					image: 'str'
-					following: 'bool' = Rule(require=False)
-					id: 'int' = Rule(require=False)
+					following: 'bool' = Rule(required=False)
+					id: 'int' = Rule(required=False)
 				body: 'str'
 				created_at: 'datetime'
 				updated_at: 'datetime'
 				author: AuthorSchema1
-				public: 'bool' = Rule(require=False)
-				id: 'int' = Rule(require=False)
+				public: 'bool' = Rule(required=False)
+				id: 'int' = Rule(required=False)
 			body: 'str'
 			createdAt: 'datetime'
 			updatedAt: 'datetime'
 			author: AuthorSchema
 			description: 'str'
-			public: 'bool' = Rule(require=False)
-			slug: 'str' = Rule(require=False)
-			title: 'str' = Rule(require=False)
-			tagList: List['str'] = Rule(require=False)
-			favoritesCount: 'int' = Rule(require=False)
-			favorited: 'bool' = Rule(require=False)
-			comments: List[CommentsSchema] = Rule(require=False)
-			id: 'int' = Rule(require=False)
+			public: 'bool' = Rule(required=False)
+			slug: 'str' = Rule(required=False)
+			title: 'str' = Rule(required=False)
+			tagList: List['str'] = Rule(required=False)
+			favoritesCount: 'int' = Rule(required=False)
+			favorited: 'bool' = Rule(required=False)
+			comments: List[CommentsSchema] = Rule(required=False)
+			id: 'int' = Rule(required=False)
 		name = 'multi'
 		result: List[FeedMultiResultSchema]
 		__params__ = Response(result_data_key='articles', total_count_key='articlesCount')
@@ -349,21 +349,21 @@ class ArticlesSDK(SDK):
 	@api.get('articles/{slug}', idempotent=True)
 	def get(
 		self,
-		slug: 'str' = Rule(require=False, max_length=255),
-		tag: 'str' = Rule(require=False, max_length=255),
-		author: 'str' = Rule(require=False, max_length=40),
-		favorited: 'str' = Rule(require=False, max_length=40),
-		offset: 'int' = Rule(require=False, ge=0),
-		limit: 'int' = Rule(require=False, ge=0)
+		slug: 'str' = Rule(required=False, max_length=255),
+		tag: 'str' = Rule(required=False, max_length=255),
+		author: 'str' = Rule(required=False, max_length=40),
+		favorited: 'str' = Rule(required=False, max_length=40),
+		offset: 'int' = Rule(required=False, ge=0),
+		limit: 'int' = Rule(required=False, ge=0)
 	) -> Union[GetMultiResponse, GetSoleResponse, GetBadrequestResponse]: pass
 
 	@api.put('articles/{slug}', idempotent=True)
 	def put(
 		self,
-		slug: 'str' = Rule(require=False, max_length=255),
-		tag: 'str' = Rule(require=False, max_length=255),
-		author: 'str' = Rule(require=False, max_length=40),
-		favorited: 'str' = Rule(require=False, max_length=40),
+		slug: 'str' = Rule(required=False, max_length=255),
+		tag: 'str' = Rule(required=False, max_length=255),
+		author: 'str' = Rule(required=False, max_length=40),
+		favorited: 'str' = Rule(required=False, max_length=40),
 		data: PutBodySchema = Request.Body
 	) -> Union[PutSoleResponse, PutBadrequestResponse]: pass
 
@@ -376,10 +376,10 @@ class ArticlesSDK(SDK):
 	@api.delete('articles/{slug}', idempotent=True)
 	def delete(
 		self,
-		slug: 'str' = Rule(require=False, max_length=255),
-		tag: 'str' = Rule(require=False, max_length=255),
-		author: 'str' = Rule(require=False, max_length=40),
-		favorited: 'str' = Rule(require=False, max_length=40)
+		slug: 'str' = Rule(required=False, max_length=255),
+		tag: 'str' = Rule(required=False, max_length=255),
+		author: 'str' = Rule(required=False, max_length=40),
+		favorited: 'str' = Rule(required=False, max_length=40)
 	) -> Union[BaseResponse, DeleteBadrequestResponse]: pass
 
 	@api.get('articles/feed', idempotent=True)
@@ -392,8 +392,8 @@ class ProfilesFollowSDK(SDK):
 			username: 'str'
 			bio: 'str'
 			image: 'str'
-			following: 'bool' = Rule(require=False)
-			id: 'int' = Rule(require=False)
+			following: 'bool' = Rule(required=False)
+			id: 'int' = Rule(required=False)
 		result: PostResultSchema
 		__params__ = Response(result_data_key='profile')
 
@@ -402,8 +402,8 @@ class ProfilesFollowSDK(SDK):
 			username: 'str'
 			bio: 'str'
 			image: 'str'
-			following: 'bool' = Rule(require=False)
-			id: 'int' = Rule(require=False)
+			following: 'bool' = Rule(required=False)
+			id: 'int' = Rule(required=False)
 		result: DeleteResultSchema
 		__params__ = Response(result_data_key='profile')
 
@@ -428,7 +428,7 @@ class ProfilesSDK(SDK):
 			username: 'str'
 			bio: 'str'
 			image: 'str'
-			following: 'bool' = Rule(require=False)
+			following: 'bool' = Rule(required=False)
 		result: GetResultSchema
 		__params__ = Response(result_data_key='profile')
 
@@ -459,8 +459,8 @@ class UsersSDK(SDK, response=Response(result_data_key='user')):
 			bio: 'str'
 			image: 'str'
 			email: 'str'
-			token: 'str' = Rule(require=False)
-			id: 'int' = Rule(require=False)
+			token: 'str' = Rule(required=False)
+			id: 'int' = Rule(required=False)
 		result: PostResultSchema
 
 	class PostBadrequestResponse(BaseResponse):
@@ -481,8 +481,8 @@ class UsersSDK(SDK, response=Response(result_data_key='user')):
 			bio: 'str'
 			image: 'str'
 			email: 'str'
-			token: 'str' = Rule(require=False)
-			id: 'int' = Rule(require=False)
+			token: 'str' = Rule(required=False)
+			id: 'int' = Rule(required=False)
 		result: LoginResultSchema
 
 	class LoginBadrequestResponse(BaseResponse):
@@ -510,7 +510,7 @@ class UserSDK(SDK):
 			bio: 'str'
 			image: 'str'
 			email: 'str'
-			token: 'str' = Rule(require=False)
+			token: 'str' = Rule(required=False)
 		result: GetResultSchema
 		__params__ = Response(result_data_key='user')
 
@@ -534,8 +534,8 @@ class UserSDK(SDK):
 			bio: 'str'
 			image: 'str'
 			email: 'str'
-			token: 'str' = Rule(require=False)
-			id: 'int' = Rule(require=False)
+			token: 'str' = Rule(required=False)
+			id: 'int' = Rule(required=False)
 		result: PutResultSchema
 		__params__ = Response(result_data_key='user')
 
@@ -547,13 +547,13 @@ class UserSDK(SDK):
 	@api.get('user', idempotent=True)
 	def get(
 		self,
-		id: 'int' = Rule(require=False, ge=1, le=2147483647)
+		id: 'int' = Rule(required=False, ge=1, le=2147483647)
 	) -> Union[GetResponse, GetBadrequestResponse]: pass
 
 	@api.put('user', idempotent=True)
 	def put(
 		self,
-		id: 'int' = Rule(require=False, ge=1, le=2147483647),
+		id: 'int' = Rule(required=False, ge=1, le=2147483647),
 		data: PutBodySchema = Request.Body
 	) -> Union[PutResponse, PutBadrequestResponse]: pass
 
