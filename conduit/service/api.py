@@ -1,44 +1,36 @@
-from utilmeta.utils import *
-from utilmeta.types import *
-from domain.user.api import UsersAPI
-from domain.user.module import UserCurrent, UserProfile
-from domain.article.module import ArticleMain
+import utype
+from utilmeta.utils import exceptions, Error
+from domain.user.api import UserAPI, ProfileAPI, AuthenticationAPI
+from domain.article.api import ArticleAPI
+from utilmeta.core import api, response
+from typing import List
 
 
-class RootAPI(API):
-    request = Request(csrf_exempt=True)
+class RootAPI(api.API):
+    user: UserAPI
+    users: AuthenticationAPI
+    profiles: ProfileAPI
+    articles: ArticleAPI
 
-    class Router:
-        user = UserCurrent
-        users = UsersAPI
-        profiles = UserProfile
-        articles = ArticleMain
+    class TagsSchema(utype.Schema):
+        tags: List[str]
 
     @api.get
-    def tags(self) -> Response(List[str], result_data_key='tags'):
+    async def tags(self) -> TagsSchema:
         from domain.article.models import Tag
-        return Tag.objects.values_list('name', flat=True)
+        return self.TagsSchema(
+            tags=[name async for name in Tag.objects.values_list('name', flat=True)]
+        )
 
-    @api.before(Router.user, Router.users)
-    def alter_user_body(self):
-        if self.request.data:
-            self.request.data = self.request.data.get('user', self.request.data)
-
-    @api.before(Router.articles)
-    def alter_content_body(self):
-        if self.request.data:
-            self.request.data = self.request.data.get(
-                'article', self.request.data.get('comment', self.request.data)
-            )
-
-    @api.handle('*', exc.BadRequest)
-    def handle_bad_request(self, e: Error) -> Response(error_message_key='error', status=422):
-        print('BAD REQUEST:', e.type)
-        print(e.full_info)
-        return self.response(message=e)
+    class ErrorResponse(response.Response):
+        message_key = 'error'
 
     @api.handle('*', Exception)
-    def handle_all_request(self, e: Error) -> Response(error_message_key='error'):
+    def handle_all_request(self, e: Error) -> ErrorResponse:
         print('ERROR:', e.type)
         print(e.full_info)
-        return self.response(message=e, status=e.status)
+        if isinstance(e.exception, exceptions.BadRequest):
+            status = 422
+        else:
+            status = e.status
+        return self.ErrorResponse(error=e, status=status)

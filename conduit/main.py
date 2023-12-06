@@ -1,5 +1,7 @@
-from utilmeta.service import UtilMeta
-from config.conf import config
+from config.service import service
+
+service.mount('service.api.RootAPI', route='/api')
+app = service.application()
 
 if __name__ == '__main__':
-    UtilMeta(config=config).serve()
+    service.run()

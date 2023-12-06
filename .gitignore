@@ -9,7 +9,7 @@ deploy/run
 deploy/log
 dist
 count.py
-conduit/domain/test
+conduit/conduit
 
 .idea
 .vscode

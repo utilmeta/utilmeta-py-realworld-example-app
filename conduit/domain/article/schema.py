@@ -1,32 +1,52 @@
-from utilmeta.types import *
-from utilmeta.utils import *
+from utype.types import *
+from utilmeta.core import orm
 from domain.user.schema import ProfileSchema
-from domain.user.models import User
+from domain.user.models import Favorite
+from .models import Comment, Article
+from ..base import BaseORMSchema
+from utilmeta.core.orm.backends.django import expressions as exp
 
 
-class BaseContentSchema(Schema):
+class BaseContentSchema(BaseORMSchema):
     body: str
     created_at: datetime
     updated_at: datetime
     author: ProfileSchema
-    public: bool = Field(readonly=True)
+    # public: bool = orm.Field(readonly=True)
+    author_id: int = orm.Field(mode='a', no_input=True)
 
 
-class CommentSchema(BaseContentSchema):
-    pass
+class CommentSchema(BaseContentSchema[Comment]):
+    id: int = orm.Field(mode='r')
+    article_id: int = orm.Field(mode='a', no_input=True)
 
 
-class ArticleSchema(BaseContentSchema):
-    __options__ = Schema.Options(unprovided_attribute_value=None)   # easy to deal with unprovided value in hooks
-
-    slug: str = Field(readonly=True, allow_creation=False, required=False, bypass_write=True)
-    title: str
-    description: str
-    tag_list: List[str] = Field('tags.name', readonly=True, allow_creation=True, default=list)
+class ArticleSchema(BaseContentSchema[Article]):
+    id: int = orm.Field(no_input=True)
+    slug: str = orm.Field(no_input='aw', default=None, defer_default=True)
+    title: str = orm.Field(default='', defer_default=True)
+    description: str = orm.Field(default='', defer_default=True)
+    tag_list: List[str] = orm.Field('tags.name', mode='rwa', no_output='aw', default_factory=list)
     favorites_count: int = exp.Count('favorited_bys')
+    favorited: bool = False
+    # to be inherited
 
-    favorited: bool = Field(request_expression=lambda request: exp.Exists(
-        User.objects.filter(pk=request.user_id, favorites=exp.OuterRef('pk'))
-    ))
+    async def check_slug(self):
+        if self.title:
+            self.slug = '-'.join([''.join(filter(str.isalnum, v)) for v in self.title.split()]).lower()
+            while await Article.objects.filter(slug=self.slug).exclude(id=self.pk).aexists():
+                self.slug += '1'  # use to avoid slug conflict
 
-    comments: List[CommentSchema] = Field(discard=True, module='CommentMain', mount=True)
+    @classmethod
+    def get_runtime(cls, user_id):
+        if not user_id:
+            return cls
+
+        class ArticleRuntimeSchema(cls):
+            favorited: bool = orm.Field(
+                exp.Exists(
+                    Favorite.objects.filter(article=exp.OuterRef('pk'), user=user_id)
+                )
+            )
+
+        return ArticleRuntimeSchema

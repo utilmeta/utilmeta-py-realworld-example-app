@@ -1,31 +1,33 @@
-from utilmeta.fields import *
+from django.db import models
+from utilmeta.core.orm.backends.django import models as amodels
 
 
-class BaseContent(Model):
-    body = TextField()
-    created_at = DateTimeField(auto_now_add=True)
-    updated_at = DateTimeField(auto_now=True)
-    public = BooleanField(default=False)
+class BaseContent(amodels.AwaitableModel):
+    body = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    # public = models.BooleanField(default=False)
+    author_id: int
 
     class Meta:
         abstract = True
         ordering = ['-created_at', '-updated_at']
 
 
-class Tag(Model):
-    name = CharField(max_length=255)
-    slug = SlugField(db_index=True, unique=True)
-    created_at = DateTimeField(auto_now_add=True)
+class Tag(amodels.AwaitableModel):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(db_index=True, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class Article(BaseContent):
-    slug = SlugField(db_index=True, max_length=255, unique=True)
-    title = CharField(db_index=True, max_length=255)
-    description = TextField()
-    author = ForeignKey('user.User', on_delete=CASCADE, related_name='articles')
-    tags = ManyToManyField(Tag, related_name='articles')
+    slug = models.SlugField(db_index=True, max_length=255, unique=True)
+    title = models.CharField(db_index=True, max_length=255)
+    description = models.TextField()
+    author = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='articles')
+    tags = models.ManyToManyField(Tag, related_name='articles')
 
 
 class Comment(BaseContent):
-    article = ForeignKey(Article, related_name='comments', on_delete=CASCADE)
-    author = ForeignKey('user.User', on_delete=CASCADE, related_name='comments')
+    article = models.ForeignKey(Article, related_name='comments', on_delete=models.CASCADE)
+    author = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='comments')
