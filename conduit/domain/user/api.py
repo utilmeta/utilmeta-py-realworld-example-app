@@ -6,24 +6,32 @@ from .models import User, Follow
 from .schema import UserRegister, UserLogin, UserSchema, ProfileSchema
 
 
+class ProfileResponse(response.Response):
+    result_key = 'profile'
+    result: ProfileSchema
+
+
+class UserResponse(response.Response):
+    result_key = 'user'
+    result: UserSchema
+
+
 @api.route('profiles/{username}')
 class ProfileAPI(API):
     username: str = request.PathParam(regex='[A-Za-z0-9_]{1,60}')       # wild range regex
+    response = ProfileResponse
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.profile: Optional[User] = None
         self.user: Optional[User] = None
 
-    class response(response.Response):
-        result_key = 'profile'
-
     @api.get
-    async def get(self) -> ProfileSchema:
+    async def get(self):
         return await ProfileSchema.get_runtime(self.user.pk).ainit(self.profile)
 
     @api.post
-    async def follow(self) -> ProfileSchema:
+    async def follow(self):
         await Follow.objects.aget_or_create(
             following=self.profile,
             follower=self.user
@@ -31,7 +39,7 @@ class ProfileAPI(API):
         return await self.get()
 
     @api.delete(follow)
-    async def unfollow(self) -> ProfileSchema:
+    async def unfollow(self):
         await Follow.objects.filter(
             following=self.profile,
             follower=self.user
@@ -47,22 +55,18 @@ class ProfileAPI(API):
         self.user = user
 
 
-class UserResponse(response.Response):
-    result_key = 'user'
-
-
 class UserAPI(API):
     response = UserResponse
 
     @api.get
-    async def get(self) -> UserSchema:      # get current user
+    async def get(self):      # get current user
         user_id = await self.get_user_id()
         if not user_id:
             raise exceptions.Unauthorized('authentication required')
         return await UserSchema.ainit(user_id)
 
     @api.put
-    async def put(self, user: UserSchema[orm.WP] = request.BodyParam) -> UserSchema:
+    async def put(self, user: UserSchema[orm.WP] = request.BodyParam):
         user.id = await self.get_user_id()
         await user.asave()
         return await self.get()
@@ -72,7 +76,7 @@ class AuthenticationAPI(API):
     response = UserResponse
 
     @api.post
-    async def post(self, user: UserRegister = request.BodyParam) -> UserSchema:        # signup
+    async def post(self, user: UserRegister = request.BodyParam):        # signup
         if await User.objects.filter(username=user.username).aexists():
             raise exceptions.BadRequest(f'duplicate username: {repr(user.username)}')
         if await User.objects.filter(email=user.email).aexists():
@@ -85,7 +89,7 @@ class AuthenticationAPI(API):
         return await UserSchema.ainit(user.pk)
 
     @api.post
-    async def login(self, user: UserLogin = request.BodyParam) -> UserSchema:
+    async def login(self, user: UserLogin = request.BodyParam):
         user_inst = await self.user_config.login(self.request, token=user.email, password=user.password)
         if not user_inst:
             raise exceptions.PermissionDenied('email or password wrong')

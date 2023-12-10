@@ -15,17 +15,19 @@ class CommentAPI(API):
     class ListResponse(response.Response):
         result_key = 'comments'
         name = 'list'
+        result: List[CommentSchema]
 
     class ObjectResponse(response.Response):
         result_key = 'comment'
         name = 'object'
+        result: CommentSchema
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.article: Optional[Article] = None
 
     @api.get
-    async def get(self) -> ListResponse[List[CommentSchema]]:
+    async def get(self) -> ListResponse:
         return self.ListResponse(
             await CommentSchema.aserialize(
                 Comment.objects.filter(article=self.article)
@@ -34,7 +36,7 @@ class CommentAPI(API):
 
     @api.post
     async def post(self, comment: CommentSchema[orm.A] = request.BodyParam,
-                   user: User = Auth.user_config) -> ObjectResponse[CommentSchema]:
+                   user: User = Auth.user_config) -> ObjectResponse:
         comment.article_id = self.article.pk
         comment.author_id = user.pk
         await comment.asave()
@@ -76,10 +78,14 @@ class ArticleAPI(API):
         description = 'list of objects when path param [slug] is not provided'
         name = 'list'
 
+        result: List[ArticleSchema]
+
     class ObjectResponse(response.Response):
         result_key = 'article'
         description = 'single object when path param [slug] is provided or new object is created'
         name = 'object'
+
+        result: ArticleSchema
 
     class BaseArticleQuery(orm.Query[Article]):
         offset: int = orm.Offset(default=0)
@@ -91,7 +97,7 @@ class ArticleAPI(API):
         favorited: str = orm.Filter('favorited_bys.username')
 
     @api.get
-    async def get(self, query: ListArticleQuery) -> ListResponse[List[ArticleSchema]]:
+    async def get(self, query: ListArticleQuery) -> ListResponse:
         count = await query.acount()
         schema = ArticleSchema.get_runtime(
             await self.get_user_id()
@@ -104,7 +110,7 @@ class ArticleAPI(API):
         )
 
     @api.get
-    async def feed(self, query: BaseArticleQuery) -> ListResponse[List[ArticleSchema]]:
+    async def feed(self, query: BaseArticleQuery) -> ListResponse:
         user_id = await self.get_user_id()
         if not user_id:
             return self.ListResponse([], count=0)
@@ -173,7 +179,7 @@ class ArticleAPI(API):
             self.tags.append(tag)
 
     @api.after(get_article, favorite, unfavorite, update_article, post)
-    async def handle_response(self) -> ObjectResponse[ArticleSchema]:
+    async def handle_response(self) -> ObjectResponse:
         if not self.article:
             raise exceptions.NotFound('article not found')
         if self.tags:

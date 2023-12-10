@@ -4,6 +4,7 @@ from domain.user.api import UserAPI, ProfileAPI, AuthenticationAPI
 from domain.article.api import ArticleAPI
 from utilmeta.core import api, response
 from typing import List
+from utilmeta.core.api.specs.openapi import OpenAPI
 
 
 class RootAPI(api.API):
@@ -11,6 +12,8 @@ class RootAPI(api.API):
     users: AuthenticationAPI
     profiles: ProfileAPI
     articles: ArticleAPI
+
+    docs: OpenAPI.as_api('openapi.json')
 
     class TagsSchema(utype.Schema):
         tags: List[str]
