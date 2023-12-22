@@ -11,7 +11,7 @@ class BaseContent(amodels.AwaitableModel):
 
     class Meta:
         abstract = True
-        ordering = ['-created_at', '-updated_at']
+        ordering = ['-created_at']
 
 
 class Tag(amodels.AwaitableModel):

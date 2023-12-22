@@ -1,7 +1,7 @@
-from utilmeta.utils import *
 from utilmeta.core import orm
 from .models import User, Follow
 from utilmeta.core.orm.backends.django import expressions as exp
+from utype.types import EmailStr
 
 
 class UsernameMixin(orm.Schema[User]):
@@ -23,7 +23,7 @@ class UserRegister(UserLogin, UsernameMixin): pass
 
 class UserSchema(UserBase):
     id: int = orm.Field(no_input=True)
-    email: str
+    email: EmailStr
     password: str = orm.Field(mode='wa')
     token: str = orm.Field(mode='r')
 

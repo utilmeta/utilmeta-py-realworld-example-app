@@ -12,9 +12,9 @@ class User(amodels.AwaitableModel):
         symmetrical=False
     )
     favorites = models.ManyToManyField('article.Article', through='Favorite', related_name='favorited_bys')
-    token = models.TextField(default=None, null=True)
-    bio = models.TextField(default=None, null=True)
-    image = models.URLField(default=None, null=True)
+    token = models.TextField(default='')
+    bio = models.TextField(default='')
+    image = models.URLField(default='')
 
 
 class Favorite(amodels.AwaitableModel):

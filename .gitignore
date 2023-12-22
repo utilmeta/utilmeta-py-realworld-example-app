@@ -4,13 +4,12 @@ __pycache__/
 
 env
 env/*
-config/env
-deploy/run
-deploy/log
+deploy
 dist
 count.py
 conduit/conduit
 
+.obsidian
 .idea
 .vscode
 *.whl

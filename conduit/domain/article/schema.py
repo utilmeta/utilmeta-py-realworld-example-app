@@ -43,10 +43,8 @@ class ArticleSchema(BaseContentSchema[Article]):
             return cls
 
         class ArticleRuntimeSchema(cls):
-            favorited: bool = orm.Field(
-                exp.Exists(
-                    Favorite.objects.filter(article=exp.OuterRef('pk'), user=user_id)
-                )
+            favorited: bool = exp.Exists(
+                Favorite.objects.filter(article=exp.OuterRef('pk'), user=user_id)
             )
 
         return ArticleRuntimeSchema

@@ -1,7 +1,7 @@
 from typing import Optional
 from utilmeta.core import response, request, api, orm
 from utilmeta.utils import exceptions
-from config.auth import Auth, API
+from config.auth import API
 from .models import User, Follow
 from .schema import UserRegister, UserLogin, UserSchema, ProfileSchema
 
@@ -24,52 +24,41 @@ class ProfileAPI(API):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.profile: Optional[User] = None
-        self.user: Optional[User] = None
 
     @api.get
-    async def get(self):
-        return await ProfileSchema.get_runtime(self.user.pk).ainit(self.profile)
+    async def get(self, user: Optional[User] = API.user_config):
+        return await ProfileSchema.get_runtime(user).ainit(self.profile)
 
     @api.post
-    async def follow(self):
-        await Follow.objects.aget_or_create(
-            following=self.profile,
-            follower=self.user
-        )
-        return await self.get()
+    async def follow(self, user: User = API.user_config):
+        await Follow.objects.aget_or_create(following=self.profile, follower=user)
+        return await self.get(user)
 
     @api.delete(follow)
-    async def unfollow(self):
-        await Follow.objects.filter(
-            following=self.profile,
-            follower=self.user
-        ).adelete()
-        return await self.get()
+    async def unfollow(self, user: User = API.user_config):
+        await Follow.objects.filter(following=self.profile, follower=user).adelete()
+        return await self.get(user)
 
     @api.before('*')
-    async def handle_profile(self, user: User = Auth.user_config):
+    async def handle_profile(self):
         profile = await User.objects.filter(username=self.username).afirst()
         if not profile:
             raise exceptions.NotFound(f'profile({repr(self.username)}) not found')
         self.profile = profile
-        self.user = user
 
 
 class UserAPI(API):
     response = UserResponse
 
     @api.get
-    async def get(self):      # get current user
-        user_id = await self.get_user_id()
-        if not user_id:
-            raise exceptions.Unauthorized('authentication required')
-        return await UserSchema.ainit(user_id)
+    async def get(self, user: User = API.user_config):      # get current user
+        return await UserSchema.ainit(user)
 
     @api.put
-    async def put(self, user: UserSchema[orm.WP] = request.BodyParam):
-        user.id = await self.get_user_id()
+    async def put(self, user: UserSchema[orm.WP] = request.BodyParam, request_user: User = API.user_config):
+        user.id = request_user.pk
         await user.asave()
-        return await self.get()
+        return await UserSchema.ainit(request_user)
 
 
 class AuthenticationAPI(API):

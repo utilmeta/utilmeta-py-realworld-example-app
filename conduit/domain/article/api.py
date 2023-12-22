@@ -3,7 +3,7 @@ from utilmeta.core import api, request, orm, response
 from domain.user.models import User, Favorite
 from .models import Article, Comment, Tag
 from .schema import ArticleSchema, CommentSchema
-from config.auth import API, Auth
+from config.auth import API
 from utilmeta.utils import exceptions
 from typing import List, Optional
 
@@ -36,7 +36,7 @@ class CommentAPI(API):
 
     @api.post
     async def post(self, comment: CommentSchema[orm.A] = request.BodyParam,
-                   user: User = Auth.user_config) -> ObjectResponse:
+                   user: User = API.user_config) -> ObjectResponse:
         comment.article_id = self.article.pk
         comment.author_id = user.pk
         await comment.asave()
@@ -45,7 +45,7 @@ class CommentAPI(API):
         )
 
     @api.delete('/{id}')
-    async def delete_comment(self, id: int, user: User = Auth.user_config):
+    async def delete_comment(self, id: int, user: User = API.user_config):
         comment = await Comment.objects.filter(
             id=id,
         ).afirst()
@@ -56,11 +56,26 @@ class CommentAPI(API):
         await comment.adelete()
 
     @api.before('*')
-    async def handle_article(self):
+    async def handle_article_slug(self):
         article = await Article.objects.filter(slug=self.slug).afirst()     # async, so cannot merge in __init__
         if not article:
             raise exceptions.NotFound('article not found')
         self.article = article
+
+
+class MultiArticlesResponse(response.Response):
+    result_key = 'articles'
+    count_key = 'articlesCount'
+    description = 'list of objects when path param [slug] is not provided'
+    name = 'multi'
+    result: List[ArticleSchema]
+
+
+class SingleArticleResponse(response.Response):
+    result_key = 'article'
+    description = 'single object when path param [slug] is provided or new object is created'
+    name = 'single'
+    result: ArticleSchema
 
 
 class ArticleAPI(API):
@@ -70,22 +85,6 @@ class ArticleAPI(API):
         super().__init__(*args, **kwargs)
         self.tags = []
         self.article: Optional[Article] = None
-
-    class ListResponse(response.Response):
-        result_key = 'articles'
-        count_key = 'articlesCount'
-
-        description = 'list of objects when path param [slug] is not provided'
-        name = 'list'
-
-        result: List[ArticleSchema]
-
-    class ObjectResponse(response.Response):
-        result_key = 'article'
-        description = 'single object when path param [slug] is provided or new object is created'
-        name = 'object'
-
-        result: ArticleSchema
 
     class BaseArticleQuery(orm.Query[Article]):
         offset: int = orm.Offset(default=0)
@@ -97,12 +96,12 @@ class ArticleAPI(API):
         favorited: str = orm.Filter('favorited_bys.username')
 
     @api.get
-    async def get(self, query: ListArticleQuery) -> ListResponse:
+    async def get(self, query: ListArticleQuery) -> MultiArticlesResponse:
         count = await query.acount()
         schema = ArticleSchema.get_runtime(
             await self.get_user_id()
         )
-        return self.ListResponse(
+        return MultiArticlesResponse(
             result=await schema.aserialize(
                 query.get_queryset()
             ),
@@ -110,14 +109,14 @@ class ArticleAPI(API):
         )
 
     @api.get
-    async def feed(self, query: BaseArticleQuery) -> ListResponse:
+    async def feed(self, query: BaseArticleQuery) -> MultiArticlesResponse:
         user_id = await self.get_user_id()
         if not user_id:
-            return self.ListResponse([], count=0)
+            return MultiArticlesResponse([], count=0)
         base_qs = Article.objects.filter(author__followers=user_id)
         count = await base_qs.acount()
         schema = ArticleSchema.get_runtime(user_id)
-        return self.ListResponse(
+        return MultiArticlesResponse(
             result=await schema.aserialize(
                 query.get_queryset(
                     base_qs
@@ -130,21 +129,21 @@ class ArticleAPI(API):
     async def get_article(self): pass
 
     @api.post('{slug}/favorite')
-    async def favorite(self, user: User = Auth.user_config):
+    async def favorite(self, user: User = API.user_config):
         await Favorite.objects.aget_or_create(
             article=self.article,
             user=user
         )
 
     @api.delete('{slug}/favorite')
-    async def unfavorite(self, user: User = Auth.user_config):
+    async def unfavorite(self, user: User = API.user_config):
         await Favorite.objects.filter(
             article=self.article,
             user=user
         ).adelete()
 
     @api.put('/{slug}')
-    async def update_article(self, article: ArticleSchema[orm.WP] = request.BodyParam, user: User = Auth.user_config):
+    async def update_article(self, article: ArticleSchema[orm.WP] = request.BodyParam, user: User = API.user_config):
         if self.article.author_id != user.pk:
             raise exceptions.PermissionDenied('permission denied')
         article.id = self.article.pk
@@ -152,7 +151,7 @@ class ArticleAPI(API):
         await article.asave()
 
     @api.delete('/{slug}')
-    async def delete_article(self, user: User = Auth.user_config):
+    async def delete_article(self, user: User = API.user_config):
         if self.article.author_id != user.pk:
             raise exceptions.PermissionDenied('permission denied')
         await self.article.adelete()
@@ -165,7 +164,7 @@ class ArticleAPI(API):
         self.article = article
 
     @api.post
-    async def post(self, article: ArticleSchema[orm.A] = request.BodyParam, user: User = Auth.user_config):
+    async def post(self, article: ArticleSchema[orm.A] = request.BodyParam, user: User = API.user_config):
         article.author_id = user.pk
         await article.check_slug()
         await article.asave()
@@ -179,7 +178,7 @@ class ArticleAPI(API):
             self.tags.append(tag)
 
     @api.after(get_article, favorite, unfavorite, update_article, post)
-    async def handle_response(self) -> ObjectResponse:
+    async def handle_response(self) -> SingleArticleResponse:
         if not self.article:
             raise exceptions.NotFound('article not found')
         if self.tags:
@@ -188,6 +187,6 @@ class ArticleAPI(API):
         schema = ArticleSchema.get_runtime(
             await self.get_user_id()
         )
-        return self.ObjectResponse(
+        return SingleArticleResponse(
             await schema.ainit(self.article)
         )
