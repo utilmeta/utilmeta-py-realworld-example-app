@@ -27,14 +27,18 @@ class RootAPI(api.API):
         )
 
     class ErrorResponse(response.Response):
-        message_key = 'error'
+        message_key = 'msg'
+        result_key = 'errors'
 
     @api.handle('*', Exception)
-    def handle_all_request(self, e: Error) -> ErrorResponse:
+    def handle_errors(self, e: Error) -> ErrorResponse:
         print('ERROR:', e.type)
         print(e.full_info)
-        if isinstance(e.exception, exceptions.BadRequest):
+        detail = None
+        exception = e.exception
+        if isinstance(exception, exceptions.BadRequest):
+            detail = exception.detail
             status = 422
         else:
             status = e.status
-        return self.ErrorResponse(error=e, status=status)
+        return self.ErrorResponse(detail, error=e, status=status)

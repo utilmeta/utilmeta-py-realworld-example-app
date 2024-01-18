@@ -2,7 +2,6 @@ from utilmeta import UtilMeta
 from config.conf import configure
 from config.env import env
 import starlette
-import sys
 
 __all__ = ['service']
 
@@ -15,7 +14,6 @@ service = UtilMeta(
     version=(1, 0, 0),
     host='0.0.0.0' if env.PRODUCTION else '127.0.0.1',
     port=80 if env.PRODUCTION else 8000,
-    background='-b' in sys.argv,
     asynchronous=True
 )
 configure(service)

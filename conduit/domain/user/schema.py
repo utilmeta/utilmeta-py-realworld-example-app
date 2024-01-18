@@ -1,6 +1,6 @@
 from utilmeta.core import orm
 from .models import User, Follow
-from utilmeta.core.orm.backends.django import expressions as exp
+from django.db import models
 from utype.types import EmailStr
 
 
@@ -37,10 +37,8 @@ class ProfileSchema(UserBase):
             return cls
 
         class ProfileRuntimeSchema(cls):
-            following: bool = orm.Field(
-                exp.Exists(
-                    Follow.objects.filter(following=exp.OuterRef('pk'), follower=user_id)
-                )
+            following: bool = models.Exists(
+                Follow.objects.filter(following=models.OuterRef('pk'), follower=user_id)
             )
 
         return ProfileRuntimeSchema

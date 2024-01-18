@@ -128,14 +128,14 @@ class ArticleAPI(API):
     @api.get('/{slug}')
     async def get_article(self): pass
 
-    @api.post('{slug}/favorite')
+    @api.post('/{slug}/favorite')
     async def favorite(self, user: User = API.user_config):
         await Favorite.objects.aget_or_create(
             article=self.article,
             user=user
         )
 
-    @api.delete('{slug}/favorite')
+    @api.delete('/{slug}/favorite')
     async def unfavorite(self, user: User = API.user_config):
         await Favorite.objects.filter(
             article=self.article,
@@ -156,19 +156,19 @@ class ArticleAPI(API):
             raise exceptions.PermissionDenied('permission denied')
         await self.article.adelete()
 
-    @api.before(get_article, favorite, unfavorite, update_article, delete_article)
-    async def handle_slug(self, slug: str = request.SlugPathParam):
-        article = await Article.objects.filter(slug=slug).afirst()
-        if not article:
-            raise exceptions.NotFound('article not found')
-        self.article = article
-
     @api.post
     async def post(self, article: ArticleSchema[orm.A] = request.BodyParam, user: User = API.user_config):
         article.author_id = user.pk
         await article.check_slug()
         await article.asave()
         self.article = article.get_instance()
+
+    @api.before(get_article, favorite, unfavorite, update_article, delete_article)
+    async def handle_slug(self, slug: str = request.SlugPathParam):
+        article = await Article.objects.filter(slug=slug).afirst()
+        if not article:
+            raise exceptions.NotFound('article not found')
+        self.article = article
 
     @api.before(post, update_article)
     async def gen_tags(self, article: ArticleSchema[orm.A] = request.BodyParam):

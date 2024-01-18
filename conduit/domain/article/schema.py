@@ -4,7 +4,7 @@ from domain.user.schema import ProfileSchema
 from domain.user.models import Favorite
 from .models import Comment, Article
 from ..base import BaseORMSchema
-from utilmeta.core.orm.backends.django import expressions as exp
+from django.db import models
 
 
 class BaseContentSchema(BaseORMSchema):
@@ -27,7 +27,7 @@ class ArticleSchema(BaseContentSchema[Article]):
     title: str = orm.Field(default='', defer_default=True)
     description: str = orm.Field(default='', defer_default=True)
     tag_list: List[str] = orm.Field('tags.name', mode='rwa', no_output='aw', default_factory=list)
-    favorites_count: int = exp.Count('favorited_bys')
+    favorites_count: int = models.Count('favorited_bys')
     favorited: bool = False
     # to be inherited
 
@@ -43,8 +43,8 @@ class ArticleSchema(BaseContentSchema[Article]):
             return cls
 
         class ArticleRuntimeSchema(cls):
-            favorited: bool = exp.Exists(
-                Favorite.objects.filter(article=exp.OuterRef('pk'), user=user_id)
+            favorited: bool = models.Exists(
+                Favorite.objects.filter(article=models.OuterRef('pk'), user=user_id)
             )
 
         return ArticleRuntimeSchema
