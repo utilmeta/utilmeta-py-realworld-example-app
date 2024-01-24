@@ -71,7 +71,7 @@ class AuthenticationAPI(API):
         if await User.objects.filter(email=user.email).aexists():
             raise exceptions.BadRequest(f'duplicate email: {repr(user.username)}')
         await user.asave()
-        await self.user_config.login_user(
+        await self.user_config.alogin_user(
             request=self.request,
             user=user.get_instance(),
         )
@@ -79,7 +79,7 @@ class AuthenticationAPI(API):
 
     @api.post
     async def login(self, user: UserLogin = request.BodyParam):
-        user_inst = await self.user_config.login(self.request, token=user.email, password=user.password)
+        user_inst = await self.user_config.alogin(self.request, ident=user.email, password=user.password)
         if not user_inst:
             raise exceptions.PermissionDenied('email or password wrong')
         return await UserSchema.ainit(user_inst)

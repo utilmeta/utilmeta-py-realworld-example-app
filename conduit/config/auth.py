@@ -9,7 +9,7 @@ class API(api.API):
     user_config = auth.User(
         User,
         authentication=jwt.JsonWebToken(
-            key=env.JWT_SECRET_KEY,
+            secret_key=env.JWT_SECRET_KEY,
             user_token_field=User.token
         ),
         login_fields=User.email,
