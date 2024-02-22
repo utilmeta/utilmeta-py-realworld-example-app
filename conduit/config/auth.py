@@ -20,4 +20,4 @@ class API(api.API):
         return await self.user_config.getter(self.request)
 
     async def get_user_id(self) -> int:
-        return await var.user_id.get(self.request)
+        return await var.user_id.getter(self.request)
