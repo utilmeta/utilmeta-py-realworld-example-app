@@ -7,7 +7,7 @@ from typing import List
 from utilmeta.core.api.specs.openapi import OpenAPI
 
 
-@api.CORS(allow_origin='*')
+@api.CORS(allow_origin='*', allow_headers=['Authorization'])
 class RootAPI(api.API):
     user: UserAPI
     users: AuthenticationAPI

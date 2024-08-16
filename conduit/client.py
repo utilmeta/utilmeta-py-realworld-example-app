@@ -1,9 +1,9 @@
 from utilmeta.core import cli, request, api, orm, response
 import utype
-import aiohttp
 import asyncio
 from utype.types import *
 import httpx
+import aiohttp
 
 
 class UserSchema(utype.Schema):

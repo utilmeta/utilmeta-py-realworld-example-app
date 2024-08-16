@@ -69,7 +69,7 @@ class AuthenticationAPI(API):
         if await User.objects.filter(username=user.username).aexists():
             raise exceptions.BadRequest(f'duplicate username: {repr(user.username)}')
         if await User.objects.filter(email=user.email).aexists():
-            raise exceptions.BadRequest(f'duplicate email: {repr(user.username)}')
+            raise exceptions.BadRequest(f'duplicate email: {repr(user.email)}')
         await user.asave()
         await self.user_config.alogin_user(
             request=self.request,

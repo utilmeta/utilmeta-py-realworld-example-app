@@ -13,7 +13,9 @@ service = UtilMeta(
     production=env.PRODUCTION,
     version=(1, 0, 0),
     host='0.0.0.0' if env.PRODUCTION else '127.0.0.1',
-    port=80 if env.PRODUCTION else 8000,
-    asynchronous=True
+    port=80 if env.PRODUCTION else 8543,
+    asynchronous=True,
+    api='service.api.RootAPI',
+    route='/api'
 )
 configure(service)

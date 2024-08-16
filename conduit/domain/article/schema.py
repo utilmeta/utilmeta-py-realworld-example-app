@@ -28,7 +28,7 @@ class ArticleSchema(BaseContentSchema[Article]):
     description: str = orm.Field(default='', defer_default=True)
     tag_list: List[str] = orm.Field('tags.name', mode='rwa', no_output='aw', default_factory=list)
     favorites_count: int = models.Count('favorited_bys')
-    favorited: bool = False
+    favorited: bool = orm.Field(mode='r')
     # to be inherited
 
     async def check_slug(self):

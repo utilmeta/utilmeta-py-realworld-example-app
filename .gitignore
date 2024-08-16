@@ -18,3 +18,5 @@ conduit/conduit
 *.njsproj
 *.sln
 *.sw?
+
+conduit/realworld_ops
