@@ -73,7 +73,7 @@ class AuthenticationAPI(API):
         await user.asave()
         await self.user_config.alogin_user(
             request=self.request,
-            user=user.get_instance(),
+            user=await user.aget_instance(fresh=True),
         )
         return await UserSchema.ainit(user.pk)
 

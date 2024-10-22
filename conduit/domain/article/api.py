@@ -102,7 +102,7 @@ class ArticleAPI(API):
             await self.get_user_id()
         )
         return MultiArticlesResponse(
-            result=await schema.aserialize(
+            await schema.aserialize(
                 query.get_queryset()
             ),
             count=count
@@ -117,7 +117,7 @@ class ArticleAPI(API):
         count = await base_qs.acount()
         schema = ArticleSchema.get_runtime(user_id)
         return MultiArticlesResponse(
-            result=await schema.aserialize(
+            await schema.aserialize(
                 query.get_queryset(
                     base_qs
                 )
@@ -161,7 +161,7 @@ class ArticleAPI(API):
         article.author_id = user.pk
         await article.check_slug()
         await article.asave()
-        self.article = article.get_instance()
+        self.article = await article.aget_instance(fresh=True)
 
     @api.before(get_article, favorite, unfavorite, update_article, delete_article)
     async def handle_slug(self, slug: str = request.SlugPathParam):

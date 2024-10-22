@@ -1,6 +1,6 @@
 from utilmeta import UtilMeta
 from config.env import env
-
+import os
 
 def configure(service: UtilMeta):
     from utilmeta.core.server.backends.django import DjangoSettings
@@ -25,7 +25,7 @@ def configure(service: UtilMeta):
     ))
     service.use(DatabaseConnections({
         'default': Database(
-            name='conduit',
+            name=str(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'conduit')),
             engine='sqlite3',
         )
     }))
