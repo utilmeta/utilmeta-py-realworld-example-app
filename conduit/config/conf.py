@@ -2,6 +2,7 @@ from utilmeta import UtilMeta
 from config.env import env
 import os
 
+
 def configure(service: UtilMeta):
     from utilmeta.core.server.backends.django import DjangoSettings
     from utilmeta.core.orm import DatabaseConnections, Database
@@ -15,7 +16,7 @@ def configure(service: UtilMeta):
             engine='sqlite3',
         ),
         secure_only=env.PRODUCTION,
-        max_backlog=50 if env.PRODUCTION else 50,
+        max_backlog=10,
         trusted_hosts=[] if env.PRODUCTION else ['127.0.0.1']
     ))
 

@@ -4,7 +4,6 @@ from domain.user.api import UserAPI, ProfileAPI, AuthenticationAPI
 from domain.article.api import ArticleAPI
 from utilmeta.core import api, response
 from typing import List
-from utilmeta.core.api.specs.openapi import OpenAPI
 
 
 @api.CORS(allow_origin='*', allow_headers=['Authorization'])
@@ -13,8 +12,6 @@ class RootAPI(api.API):
     users: AuthenticationAPI
     profiles: ProfileAPI
     articles: ArticleAPI
-
-    docs: OpenAPI.as_api('openapi.json')
 
     class TagsSchema(utype.Schema):
         tags: List[str]
@@ -32,7 +29,7 @@ class RootAPI(api.API):
 
     @api.handle('*', Exception)
     def handle_errors(self, e: Error) -> ErrorResponse:
-        print('ERROR:', e.type)
+        print('Request Error:', e.type)
         print(e.full_info)
         detail = None
         exception = e.exception
