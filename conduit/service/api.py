@@ -20,7 +20,7 @@ class RootAPI(api.API):
     async def tags(self) -> TagsSchema:
         from domain.article.models import Tag
         return self.TagsSchema(
-            tags=[name async for name in Tag.objects.values_list('name', flat=True)]
+            tags=[name async for name in Tag.objects.filter(public=True).values_list('name', flat=True)]
         )
 
     class ErrorResponse(response.Response):

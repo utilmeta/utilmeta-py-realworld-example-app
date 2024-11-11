@@ -6,7 +6,7 @@ class BaseContent(amodels.AwaitableModel):
     body = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    # public = models.BooleanField(default=False)
+    public = models.BooleanField(default=False)
     author_id: int
 
     class Meta:
@@ -17,6 +17,7 @@ class BaseContent(amodels.AwaitableModel):
 class Tag(amodels.AwaitableModel):
     name = models.CharField(max_length=255)
     slug = models.SlugField(db_index=True, unique=True)
+    public = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
 

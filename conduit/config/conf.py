@@ -29,6 +29,11 @@ def configure(service: UtilMeta):
     ))
     service.use(DatabaseConnections({
         'default': Database(
+            engine='postgresql',
+            name=env.DATABASE_NAME,
+            user=env.DATABASE_USER,
+            password=env.DATABASE_PASSWORD,
+        ) if env.PRODUCTION else Database(
             name=str(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'conduit')),
             engine='sqlite3',
         )

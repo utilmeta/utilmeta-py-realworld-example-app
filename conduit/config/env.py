@@ -7,5 +7,9 @@ class ServiceEnvironment(Env):
     DJANGO_SECRET_KEY: str = ''
     BASE_URL: str = ''
 
+    DATABASE_NAME: str = ''
+    DATABASE_USER: str = ''
+    DATABASE_PASSWORD: str = ''
+
 
 env = ServiceEnvironment(sys_env='CONDUIT_')

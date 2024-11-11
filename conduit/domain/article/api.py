@@ -6,6 +6,7 @@ from .schema import ArticleSchema, CommentSchema
 from config.auth import API
 from utilmeta.utils import exceptions
 from typing import List, Optional
+from django.db import models
 
 
 @api.route('{slug}/comments')
@@ -28,9 +29,16 @@ class CommentAPI(API):
 
     @api.get
     async def get(self) -> ListResponse:
+        user_id = await self.get_user_id()
+        q = models.Q(public=True)
+        if user_id:
+            q |= models.Q(author__id=user_id)
         return self.ListResponse(
             await CommentSchema.aserialize(
-                Comment.objects.filter(article=self.article)
+                Comment.objects.filter(
+                    q,
+                    article=self.article
+                )
             )
         )
 
@@ -98,12 +106,16 @@ class ArticleAPI(API):
     @api.get
     async def get(self, query: ListArticleQuery) -> MultiArticlesResponse:
         count = await query.acount()
-        schema = ArticleSchema.get_runtime(
-            await self.get_user_id()
-        )
+        user_id = await self.get_user_id()
+        q = models.Q(public=True)
+        if user_id:
+            q |= models.Q(author__id=user_id)
+        schema = ArticleSchema.get_runtime(user_id)
         return MultiArticlesResponse(
             await schema.aserialize(
-                query.get_queryset()
+                query.get_queryset(
+                    Article.objects.filter(q)
+                )
             ),
             count=count
         )
@@ -113,7 +125,7 @@ class ArticleAPI(API):
         user_id = await self.get_user_id()
         if not user_id:
             return MultiArticlesResponse([], count=0)
-        base_qs = Article.objects.filter(author__followers=user_id)
+        base_qs = Article.objects.filter(author__followers=user_id, public=True)
         count = await base_qs.acount()
         schema = ArticleSchema.get_runtime(user_id)
         return MultiArticlesResponse(
