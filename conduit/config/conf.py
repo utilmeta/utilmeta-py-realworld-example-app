@@ -8,6 +8,7 @@ def configure(service: UtilMeta):
     from utilmeta.core.orm import DatabaseConnections, Database
     from utilmeta.conf.time import Time
     from utilmeta.ops.config import Operations
+    from utilmeta.utils import DEFAULT_SECRET_NAMES
 
     service.use(Operations(
         route='ops',
@@ -17,7 +18,9 @@ def configure(service: UtilMeta):
         ),
         secure_only=env.PRODUCTION,
         max_backlog=10,
-        trusted_hosts=[] if env.PRODUCTION else ['127.0.0.1']
+        trusted_hosts=[] if env.PRODUCTION else ['127.0.0.1'],
+        secret_names=[*DEFAULT_SECRET_NAMES, 'token'],
+        base_url=env.BASE_URL
     ))
 
     service.use(DjangoSettings(

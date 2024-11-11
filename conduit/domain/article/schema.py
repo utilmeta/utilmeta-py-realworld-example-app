@@ -33,7 +33,7 @@ class ArticleSchema(BaseContentSchema[Article]):
 
     async def check_slug(self):
         if self.title:
-            self.slug = '-'.join([''.join(filter(str.isalnum, v)) for v in self.title.split()]).lower()
+            self.slug = '-'.join(filter(bool, [''.join(filter(str.isalnum, v)) for v in self.title.split()])).lower()
             while await Article.objects.filter(slug=self.slug).exclude(id=self.pk).aexists():
                 self.slug += '1'  # use to avoid slug conflict
 
