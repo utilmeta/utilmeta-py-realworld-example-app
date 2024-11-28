@@ -105,7 +105,6 @@ class ArticleAPI(API):
 
     @api.get
     async def get(self, query: ListArticleQuery) -> MultiArticlesResponse:
-        count = await query.acount()
         user_id = await self.get_user_id()
         q = models.Q(public=True)
         if user_id:
@@ -117,7 +116,7 @@ class ArticleAPI(API):
                     Article.objects.filter(q)
                 )
             ),
-            count=count
+            count=await query.acount(Article.objects.filter(q))
         )
 
     @api.get

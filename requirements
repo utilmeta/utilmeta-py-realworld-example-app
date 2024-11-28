@@ -6,3 +6,4 @@ aiosqlite
 uvicorn
 asyncpg
 psycopg2
+pyjwt

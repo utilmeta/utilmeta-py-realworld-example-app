@@ -19,8 +19,11 @@ def configure(service: UtilMeta):
         secure_only=env.PRODUCTION,
         max_backlog=10,
         trusted_hosts=[] if env.PRODUCTION else ['127.0.0.1'],
-        secret_names=[*DEFAULT_SECRET_NAMES, 'token'],
-        base_url=env.BASE_URL
+        secret_names=[*DEFAULT_SECRET_NAMES, 'token', 'forwarded-for', 'remote_addr'],
+        base_url=env.BASE_URL,
+        log=Operations.Log(
+            hide_ip_address=True
+        )
     ))
 
     service.use(DjangoSettings(

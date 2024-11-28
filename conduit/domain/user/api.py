@@ -26,16 +26,16 @@ class ProfileAPI(API):
         self.profile: Optional[User] = None
 
     @api.get
-    async def get(self, user: Optional[User] = API.user_config):
+    async def get(self, user: Optional[User] = API.user_config) -> ProfileSchema:
         return await ProfileSchema.get_runtime(user).ainit(self.profile)
 
     @api.post
-    async def follow(self, user: User = API.user_config):
+    async def follow(self, user: User = API.user_config) -> ProfileSchema:
         await Follow.objects.aget_or_create(following=self.profile, follower=user)
         return await self.get(user)
 
     @api.delete(follow)
-    async def unfollow(self, user: User = API.user_config):
+    async def unfollow(self, user: User = API.user_config) -> ProfileSchema:
         await Follow.objects.filter(following=self.profile, follower=user).adelete()
         return await self.get(user)
 
@@ -51,11 +51,12 @@ class UserAPI(API):
     response = UserResponse
 
     @api.get
-    async def get(self, user: User = API.user_config):      # get current user
+    async def get(self, user: User = API.user_config) -> UserSchema:      # get current user
         return await UserSchema.ainit(user)
 
     @api.put
-    async def put(self, user: UserSchema[orm.WP] = request.BodyParam, request_user: User = API.user_config):
+    async def put(self, user: UserSchema[orm.WP] = request.BodyParam,
+                  request_user: User = API.user_config) -> UserSchema:
         user.id = request_user.pk
         await user.asave()
         return await UserSchema.ainit(request_user)
@@ -65,7 +66,7 @@ class AuthenticationAPI(API):
     response = UserResponse
 
     @api.post
-    async def post(self, user: UserRegister = request.BodyParam):        # signup
+    async def post(self, user: UserRegister = request.BodyParam) -> UserSchema:        # signup
         if await User.objects.filter(username=user.username).aexists():
             raise exceptions.BadRequest(f'duplicate username: {repr(user.username)}')
         if await User.objects.filter(email=user.email).aexists():
@@ -78,7 +79,7 @@ class AuthenticationAPI(API):
         return await UserSchema.ainit(user.pk)
 
     @api.post
-    async def login(self, user: UserLogin = request.BodyParam):
+    async def login(self, user: UserLogin = request.BodyParam) -> UserSchema:
         user_inst = await self.user_config.alogin(self.request, ident=user.email, password=user.password)
         if not user_inst:
             raise exceptions.PermissionDenied('email or password wrong')
